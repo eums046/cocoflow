@@ -21,7 +21,7 @@ const navItems = [
 ];
 
 export function SellerLayout() {
-  const { isSellerLoggedIn, sellerLogout } = useApp();
+  const { isSellerLoggedIn, sellerEmail, sellerLogout } = useApp();
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -56,7 +56,7 @@ export function SellerLayout() {
           </div>
           <div className="flex items-center gap-3">
             <span className="hidden sm:block text-sm text-green-200">
-              seller@cocofiber.ph
+              {sellerEmail || "seller@cocofiber.ph"}
             </span>
             <button
               onClick={handleLogout}

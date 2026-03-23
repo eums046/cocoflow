@@ -41,6 +41,7 @@ interface AppContextType {
   // Auth
   currentUser: User | null;
   isSellerLoggedIn: boolean;
+  sellerEmail: string;
   login: (email: string, password: string) => Promise<boolean>;
   register: (data: {
     email: string;
@@ -112,6 +113,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   );
   const [isSellerLoggedIn, setIsSellerLoggedIn] = useState<boolean>(() =>
     loadFromStorage("cf_seller", false)
+  );
+  const [sellerEmail, setSellerEmail] = useState<string>(() =>
+    loadFromStorage("cf_seller_email", "seller@cocofiber.ph")
   );
   const [cartItems, setCartItems] = useState<CartItem[]>(() =>
     loadFromStorage("cf_cart", [])
@@ -234,7 +238,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         const result = await apiSellerLogin(email, password);
         if (result.success) {
           setIsSellerLoggedIn(true);
+          setSellerEmail(email);
           saveToStorage("cf_seller", true);
+          saveToStorage("cf_seller_email", email);
           return true;
         }
         return false;
@@ -252,7 +258,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         const result = await apiSellerRegister(email, password);
         if (result.success) {
           setIsSellerLoggedIn(true);
+          setSellerEmail(email);
           saveToStorage("cf_seller", true);
+          saveToStorage("cf_seller_email", email);
           return { success: true, message: "Registration successful!" };
         }
         return { success: false, message: result.message || "Registration failed." };
@@ -267,7 +275,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const sellerLogout = useCallback(() => {
     setIsSellerLoggedIn(false);
+    setSellerEmail("");
     saveToStorage("cf_seller", false);
+    saveToStorage("cf_seller_email", "");
   }, []);
 
   const updateProfile = useCallback((data: Partial<User>) => {
@@ -469,6 +479,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         isAppLoading,
         currentUser,
         isSellerLoggedIn,
+        sellerEmail,
         login,
         register,
         logout,
