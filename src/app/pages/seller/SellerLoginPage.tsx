@@ -123,6 +123,17 @@ export function SellerLoginPage() {
           </div>
         </div>
       </div>
+
+      {/* Footer disclaimer */}
+      <div className="absolute bottom-0 left-0 right-0 text-center py-3 z-10">
+        <div className="flex items-center justify-center gap-2 mb-1">
+          <img src="/assets/codepals-logo.png" alt="CodePals" className="h-12 object-contain brightness-200" />
+          <span className="font-bold text-white/70 text-lg tracking-wide">codePals</span>
+        </div>
+        <p className="text-xs text-green-300/60 italic">
+          For educational purposes only, and no copyright infringement is intended.
+        </p>
+      </div>
     </div>
   );
 }

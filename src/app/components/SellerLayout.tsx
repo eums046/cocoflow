@@ -127,6 +127,10 @@ export function SellerLayout() {
             {/* Footer */}
             <footer className="mt-auto px-6 py-4 border-t border-white/40 text-center text-xs text-stone-400" style={{ background: "rgba(255,255,255,0.6)" }}>
               <p>© 2025 CocoFiber Philippines | Seller Portal</p>
+              <div className="flex items-center justify-center gap-2 mt-1">
+                <img src="/assets/codepals-logo.png" alt="CodePals" className="h-12 object-contain" />
+                <span className="font-bold text-stone-700 text-lg tracking-wide">codePals</span>
+              </div>
               <p className="italic mt-0.5">
                 For educational purposes only, and no copyright infringement is intended.
               </p>

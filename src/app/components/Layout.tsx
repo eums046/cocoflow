@@ -223,6 +223,10 @@ export function Layout() {
           <hr className="border-white/10 my-6" />
           <div className="flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-green-400">
             <p>© 2025 CocoFiber Philippines. All rights reserved.</p>
+            <div className="flex items-center gap-2">
+              <img src="/assets/codepals-logo.png" alt="CodePals" className="h-12 object-contain" />
+              <span className="font-bold text-white text-lg tracking-wide">codePals</span>
+            </div>
             <p className="text-center italic">
               For educational purposes only, and no copyright infringement is intended.
             </p>

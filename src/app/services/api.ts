@@ -1,4 +1,8 @@
 import { projectId, publicAnonKey } from "/utils/supabase/info";
+import { createClient } from "@supabase/supabase-js";
+
+const supabaseUrl = `https://${projectId}.supabase.co`;
+export const supabase = createClient(supabaseUrl, publicAnonKey);
 
 const BASE_URL = `https://${projectId}.supabase.co/functions/v1/make-server-10539df9`;
 
@@ -24,24 +28,53 @@ async function request<T = unknown>(
 }
 
 // ── Auth ───────────────────────────────────────────────────────────────────
-export function apiLogin(email: string, password: string) {
-  return request<{ success: boolean; user?: object; message?: string }>(
-    "/auth/login",
-    { method: "POST", body: JSON.stringify({ email, password }) }
-  );
+export async function apiLogin(email: string, password: string) {
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error) return { success: false, message: error.message };
+  
+  const user = {
+    id: data.user.id,
+    email: data.user.email!,
+    password, 
+    name: data.user.user_metadata?.name || '',
+    address: data.user.user_metadata?.address || '',
+    mobile: data.user.user_metadata?.mobile || '',
+    createdAt: data.user.created_at
+  };
+  return { success: true, user };
 }
 
-export function apiRegister(data: {
+export async function apiRegister(data: {
   email: string;
   password: string;
   name: string;
   address: string;
   mobile: string;
 }) {
-  return request<{ success: boolean; user?: object; message?: string }>(
-    "/auth/register",
-    { method: "POST", body: JSON.stringify(data) }
-  );
+  const { data: authData, error } = await supabase.auth.signUp({
+    email: data.email,
+    password: data.password,
+    options: {
+      data: {
+        name: data.name,
+        address: data.address,
+        mobile: data.mobile,
+      }
+    }
+  });
+
+  if (error) return { success: false, message: error.message };
+  
+  const user = {
+    id: authData.user?.id!,
+    email: data.email,
+    password: data.password,
+    name: data.name,
+    address: data.address,
+    mobile: data.mobile,
+    createdAt: authData.user?.created_at!
+  };
+  return { success: true, user };
 }
 
 export function apiSellerLogin(email: string, password: string) {
