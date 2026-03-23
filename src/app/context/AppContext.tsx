@@ -30,6 +30,7 @@ import {
   apiUpdateOrderStatus,
   apiGetStorefront,
   apiUpdateStorefront,
+  apiSellerRegister,
 } from "../services/api";
 
 // ── Context Type ────────────────────────────────────────────────────────────
@@ -50,6 +51,7 @@ interface AppContextType {
   }) => Promise<{ success: boolean; message: string }>;
   logout: () => void;
   sellerLogin: (email: string, password: string) => Promise<boolean>;
+  sellerRegister: (email: string, password: string) => Promise<{ success: boolean; message: string }>;
   sellerLogout: () => void;
   updateProfile: (data: Partial<User>) => void;
 
@@ -239,6 +241,25 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       } catch (e) {
         console.log("Seller login error:", e);
         return false;
+      }
+    },
+    []
+  );
+
+  const sellerRegister = useCallback(
+    async (email: string, password: string): Promise<{ success: boolean; message: string }> => {
+      try {
+        const result = await apiSellerRegister(email, password);
+        if (result.success) {
+          setIsSellerLoggedIn(true);
+          saveToStorage("cf_seller", true);
+          return { success: true, message: "Registration successful!" };
+        }
+        return { success: false, message: result.message || "Registration failed." };
+      } catch (e: unknown) {
+        console.log("Seller register error:", e);
+        const msg = e instanceof Error ? e.message : "Registration failed. Please try again.";
+        return { success: false, message: msg };
       }
     },
     []
@@ -452,6 +473,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         register,
         logout,
         sellerLogin,
+        sellerRegister,
         sellerLogout,
         updateProfile,
         products,

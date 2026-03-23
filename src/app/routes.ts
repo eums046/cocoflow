@@ -16,6 +16,8 @@ import { SellerStorefrontPage } from "./pages/seller/SellerStorefrontPage";
 import { InventoryPage } from "./pages/seller/InventoryPage";
 import { ReportsPage } from "./pages/seller/ReportsPage";
 
+import { SellerRegisterPage } from "./pages/seller/SellerRegisterPage";
+
 export const router = createBrowserRouter([
   // Buyer routes (with header/footer layout)
   {
@@ -32,6 +34,11 @@ export const router = createBrowserRouter([
       { path: "transactions", Component: TransactionsPage },
       { path: "profile", Component: ProfilePage },
     ],
+  },
+  // Seller registration (standalone, no sidebar)
+  {
+    path: "/seller/register",
+    Component: SellerRegisterPage,
   },
   // Seller login (standalone, no sidebar)
   {

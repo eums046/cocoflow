@@ -77,11 +77,29 @@ export async function apiRegister(data: {
   return { success: true, user };
 }
 
-export function apiSellerLogin(email: string, password: string) {
-  return request<{ success: boolean; message?: string }>(
-    "/auth/seller-login",
-    { method: "POST", body: JSON.stringify({ email, password }) }
-  );
+export async function apiSellerRegister(email: string, password: string) {
+  const { error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: { data: { role: 'seller' } }
+  });
+  if (error) return { success: false, message: error.message };
+  return { success: true };
+}
+
+export async function apiSellerLogin(email: string, password: string) {
+  // Allow hardcoded fallback for the prototype
+  if (email === "seller@cocofiber.ph" && password === "seller123") {
+    return { success: true };
+  }
+
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error) return { success: false, message: error.message };
+  
+  if (data.user.user_metadata?.role !== 'seller') {
+    return { success: false, message: "This account is not registered as a seller." };
+  }
+  return { success: true };
 }
 
 // ── Users ──────────────────────────────────────────────────────────────────
