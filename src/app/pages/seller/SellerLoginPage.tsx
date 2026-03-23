@@ -1,0 +1,128 @@
+import { useState } from "react";
+import { useNavigate, Link } from "react-router";
+import { Eye, EyeOff, Lock } from "lucide-react";
+import { useApp } from "../../context/AppContext";
+import { Logo } from "../../components/Logo";
+
+export function SellerLoginPage() {
+  const { sellerLogin } = useApp();
+  const navigate = useNavigate();
+  const [form, setForm] = useState({ email: "", password: "" });
+  const [showPw, setShowPw] = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    if (!form.email || !form.password) { setError("Please fill in all fields."); return; }
+    setLoading(true);
+    const ok = await sellerLogin(form.email, form.password);
+    setLoading(false);
+    if (ok) navigate("/seller/dashboard");
+    else setError("Invalid seller credentials. Please try again.");
+  };
+
+  return (
+    <div className="min-h-screen flex relative overflow-hidden">
+      {/* Ambient blobs */}
+      <div className="pointer-events-none absolute inset-0 z-0">
+        <div className="absolute top-[-100px] left-[-80px] w-96 h-96 rounded-full bg-green-400/18 blur-3xl" />
+        <div className="absolute bottom-[-80px] right-[-60px] w-80 h-80 rounded-full bg-amber-500/14 blur-3xl" />
+        <div className="absolute top-1/2 right-1/3 w-48 h-48 rounded-full bg-emerald-300/8 blur-2xl" />
+      </div>
+
+      {/* ── Left decorative panel ── */}
+      <div className="hidden lg:flex lg:w-1/2 flex-col items-center justify-center p-12 relative z-10 overflow-hidden">
+        <div className="absolute top-0 right-0 w-72 h-72 bg-green-400/10 rounded-full -translate-y-1/2 translate-x-1/4 blur-2xl pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-amber-500/10 rounded-full translate-y-1/2 -translate-x-1/4 blur-2xl pointer-events-none" />
+
+        <div className="relative z-10 text-center text-white max-w-sm">
+          <Logo size="lg" variant="light" />
+          <div className="mt-6 glass-auth-panel rounded-2xl p-6">
+            <Lock className="w-10 h-10 text-amber-400 mx-auto mb-3" />
+            <h2 className="text-xl font-bold mb-2">Seller Portal</h2>
+            <p className="text-green-300 text-sm leading-relaxed">
+              Manage your products, track inventory, and view sales reports from one centralized dashboard.
+            </p>
+          </div>
+          <div className="mt-6 grid grid-cols-2 gap-3 text-sm text-green-300">
+            {["Inventory Management", "Sales Reports", "Storefront Editor", "Order Tracking"].map((f) => (
+              <div key={f} className="glass-dark-card rounded-xl p-3">
+                <span className="text-green-400 text-lg block mb-1">✓</span>
+                {f}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Login form ── */}
+      <div className="flex-1 flex items-center justify-center p-6 relative z-10">
+        <div className="w-full max-w-md">
+          <div className="lg:hidden flex justify-center mb-6">
+            <div className="glass-auth-panel p-4 rounded-2xl">
+              <Logo size="md" variant="light" />
+            </div>
+          </div>
+
+          {/* Glass form card */}
+          <div className="glass-form rounded-2xl p-8">
+            <div className="text-center mb-6">
+              <div className="w-14 h-14 bg-green-700/20 border border-green-300/30 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-3">
+                <Lock className="w-7 h-7 text-green-700" />
+              </div>
+              <h1 className="text-2xl font-extrabold text-green-900">Seller Login</h1>
+              <p className="text-stone-500 text-sm mt-1">Access the CocoFiber seller portal</p>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-stone-700 mb-1.5">Email Address</label>
+                <input
+                  type="email"
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  placeholder="seller@cocofiber.ph"
+                  className="w-full border border-white/50 bg-white/60 backdrop-blur-sm rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 placeholder-stone-400"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-stone-700 mb-1.5">Password</label>
+                <div className="relative">
+                  <input
+                    type={showPw ? "text" : "password"}
+                    value={form.password}
+                    onChange={(e) => setForm({ ...form, password: e.target.value })}
+                    placeholder="••••••••"
+                    className="w-full border border-white/50 bg-white/60 backdrop-blur-sm rounded-xl px-4 py-2.5 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 placeholder-stone-400"
+                  />
+                  <button type="button" onClick={() => setShowPw(!showPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400">
+                    {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+
+              {error && (
+                <div className="bg-red-500/10 border border-red-300/40 rounded-xl p-3 text-sm text-red-700 backdrop-blur-sm">{error}</div>
+              )}
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-green-800 hover:bg-green-700 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-all disabled:opacity-60 shadow-lg shadow-green-900/30"
+              >
+                {loading ? <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" /> : <Lock className="w-4 h-4" />}
+                {loading ? "Signing in..." : "Sign in to Seller Portal"}
+              </button>
+            </form>
+
+            <p className="text-center text-xs text-stone-400 mt-5">
+              <Link to="/" className="text-green-700 hover:text-green-800 font-medium">← Back to Buyer Site</Link>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
